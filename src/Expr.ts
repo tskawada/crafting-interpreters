@@ -12,12 +12,14 @@ export abstract class Visitor {
     abstract visitBinaryExpr(expr: InstanceType<typeof Expr.Binary>): string;
     abstract visitGroupingExpr(expr: InstanceType<typeof Expr.Grouping>): string;
     abstract visitLiteralExpr(expr: InstanceType<typeof Expr.Literal>): string;
+    abstract visitLogicalExpr(expr: InstanceType<typeof Expr.Logical>): string;
     abstract visitUnaryExpr(expr: InstanceType<typeof Expr.Unary>): string;
     abstract visitVariableExpr(expr: InstanceType<typeof Expr.Variable>): string;
     abstract visitExpressionStmt(stmt: InstanceType<typeof Stmt.Expression>): void;
     abstract visitPrintStmt(stmt: InstanceType<typeof Stmt.Print>): void;
     abstract visitBlockStmt(stmt: InstanceType<typeof Stmt.Block>): void;
     abstract visitVarStmt(stmt: InstanceType<typeof Stmt.Var>): void; 
+    abstract visitIfStmt(stmt: InstanceType<typeof Stmt.If>): void;
     abstract visitAssignExpr(expr: InstanceType<typeof Expr.Assign>): string;
 }
 
@@ -46,7 +48,11 @@ export abstract class Stmt {
         }
     }
 
-    
+    static If = class extends Stmt {
+        constructor(public condition: Expr, public thenBranch: Stmt, public elseBranch: Stmt | null) {
+            super();
+        }
+    }    
 
     // @ts-ignore
     public accept(visitor: Visitor): void {
@@ -54,6 +60,7 @@ export abstract class Stmt {
         if (this instanceof Stmt.Print) return visitor.visitPrintStmt(this);
         if (this instanceof Stmt.Block) return visitor.visitBlockStmt(this);
         if (this instanceof Stmt.Var) return visitor.visitVarStmt(this);
+        if (this instanceof Stmt.If) return visitor.visitIfStmt(this);
     }
 }
 
@@ -94,6 +101,12 @@ export abstract class Expr {
         }
     };
 
+    static Logical = class extends Expr {
+        constructor(public left: Expr, public operator: Token, public right: Expr) {
+            super();
+        }
+    };
+
     // @ts-ignore
     public accept(visitor: Visitor): (string | void) {
         if (this instanceof Expr.Unary) return visitor.visitUnaryExpr(this);
@@ -102,5 +115,6 @@ export abstract class Expr {
         if (this instanceof Expr.Binary) return visitor.visitBinaryExpr(this);
         if (this instanceof Expr.Variable) return visitor.visitVariableExpr(this);
         if (this instanceof Expr.Assign) return visitor.visitAssignExpr(this);
+        if (this instanceof Expr.Logical) return visitor.visitLogicalExpr(this);
     }
 }

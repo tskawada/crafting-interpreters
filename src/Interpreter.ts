@@ -32,6 +32,15 @@ export class Interpreter extends Visitor {
         return TokenType.NIL;
     }
 
+    public visitIfStmt(stmt: InstanceType<typeof Stmt.If>) {
+        if (this.isTruthy(this.evaluate(stmt.condition))) {
+            this.execute(stmt.thenBranch);
+        } else if (stmt.elseBranch !== null) {
+            this.execute(stmt.elseBranch);
+        }
+        return null;
+    }
+
     public visitLiteralExpr(expr: InstanceType<typeof Expr.Literal>) {
         return expr.value;
     }
@@ -73,6 +82,13 @@ export class Interpreter extends Visitor {
                 return this.isEqual(left, right);
         }
         return null;
+    }
+
+    public visitLogicalExpr(expr: InstanceType<typeof Expr.Logical>): any {
+        const left = this.evaluate(expr.left);
+
+        if (this.isTruthy(left)) return left;
+        return this.isTruthy(this.evaluate(expr.right));
     }
 
     public visitUnaryExpr(expr: InstanceType<typeof Expr.Unary>): any {
