@@ -1,16 +1,11 @@
 import { Lexer } from "./Lexer";
 import { Parser } from "./Parser";
 import { Interpreter } from "./Interpreter";
+import { sampleCode } from "./SampleCode";
 
 const PRINT_DATA = true;
 
-const SAMPLE_CODE = `
-    print \"Takeuchi Yuki\";
-    print \"Hello, world!\";
-    print 1 + 2 * 3;
-    print 1 + 2 * 3 / 4;
-    print 1 * (2 + 3) / 52;
-`;
+const SAMPLE_CODE = sampleCode();
 
 const run = () => {
     try {
