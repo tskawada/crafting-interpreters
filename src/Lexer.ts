@@ -140,6 +140,11 @@ export class Lexer {
         if (this.isAtEnd) {
             throw new SyntaxError(`Unterminated string at line ${this.line}`);
         }
+
+        this.advance();
+
+        const value = this.source.slice(this.start + 1, this.current - 1);
+        this.addToken(TokenType.STRING, value);
     }
 
     private peek = (): string => {
