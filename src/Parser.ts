@@ -9,9 +9,32 @@ export class Parser {
     public parse(): Expr[] {
         const statements = [];
         while (!this.isAtEnd) {
-            statements.push(this.statement());
+            statements.push(this.declation());
         }
         return statements;
+    }
+
+    private declation(): Stmt {
+        try {
+            if (this.match(TokenType.VAR)) return this.varDeclation();
+            return this.statement();
+        }
+        catch (err) {
+            this.synchronize();
+            return new Stmt.Expression(new Expr.Literal(null));
+        }
+    }
+
+    private varDeclation(): Stmt {
+        const name = this.consume(TokenType.IDENTIFIER, "Expect variable name.");
+        let initializer = null;
+        if (this.match(TokenType.EQUAL)) {
+            initializer = this.expression;
+        }
+
+        this.consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
+        if (initializer !== null) return new Stmt.Var(name, initializer);
+        return new Stmt.Var(name, new Expr.Literal(null));
     }
 
     private statement(): Expr {
@@ -32,7 +55,23 @@ export class Parser {
     }
 
     private get expression(): Expr {
-        return this.equality;
+        return this.assignment();
+    }
+
+    private assignment(): Expr {
+        const expr = this.equality;
+
+        if (this.match(TokenType.EQUAL)) {
+            const equals = this.previous;
+            const value = this.assignment();
+
+            if (expr instanceof Expr.Variable) {
+                const name = expr.name;
+                return new Expr.Assign(name, value);
+            }
+        }
+
+        return expr;
     }
 
     private get equality(): Expr {
@@ -103,6 +142,10 @@ export class Parser {
             return new Expr.Literal(this.previous.literalValue);
         }
 
+        if (this.match(TokenType.IDENTIFIER)) {
+            return new Expr.Variable(this.previous);
+        }
+
         if (this.match(TokenType.LEFT_PAREN)) {
             const expr = this.expression;
             this.consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
@@ -147,5 +190,27 @@ export class Parser {
 
     private get previous(): Token {
         return this.tokens[this.current - 1];
+    }
+
+    private synchronize(): void {
+        this.advance();
+
+        while (!this.isAtEnd) {
+            if (this.previous.tokenType === TokenType.SEMICOLON) return;
+
+            switch (this.peek.tokenType) {
+                case TokenType.CLASS:
+                case TokenType.FUN:
+                case TokenType.VAR:
+                case TokenType.FOR:
+                case TokenType.IF:
+                case TokenType.WHILE:
+                case TokenType.PRINT:
+                case TokenType.RETURN:
+                    return;
+            }
+
+            this.advance();
+        }
     }
 }

@@ -1,7 +1,10 @@
+import { Environment } from "./Environment";
 import { Expr, Stmt, Visitor } from "./Expr";
 import { TokenType } from "./Token";
 
 export class Interpreter extends Visitor {
+    private environment = new Environment();
+
     constructor() {
         super();
     }
@@ -13,6 +16,15 @@ export class Interpreter extends Visitor {
     public visitPrintStmt(stmt: InstanceType<typeof Stmt.Print>) {
         const value = this.evaluate(stmt.expression);
         console.log(value);
+    }
+
+    public visitVarStmt(stmt: InstanceType<typeof Stmt.Var>) {
+        let value = null;
+        if (stmt.initializer !== null) {
+            value = this.evaluate(stmt.initializer);
+        }
+        this.environment.define(stmt.name.lexeme, value);
+        return TokenType.NIL;
     }
 
     public visitLiteralExpr(expr: InstanceType<typeof Expr.Literal>) {
@@ -68,6 +80,16 @@ export class Interpreter extends Visitor {
                 return -right;
         }
         return null;
+    }
+
+    public visitVariableExpr(expr: InstanceType<typeof Expr.Variable>) {
+        return this.environment.get(expr.name);
+    }
+
+    public visitAssignExpr(expr: InstanceType<typeof Expr.Assign>) {
+        const value = this.evaluate(expr.value);
+        this.environment.assign(expr.name, value);
+        return value;
     }
 
     private isTruthy(obj: any) {

@@ -13,8 +13,11 @@ export abstract class Visitor {
     abstract visitGroupingExpr(expr: InstanceType<typeof Expr.Grouping>): string;
     abstract visitLiteralExpr(expr: InstanceType<typeof Expr.Literal>): string;
     abstract visitUnaryExpr(expr: InstanceType<typeof Expr.Unary>): string;
+    abstract visitVariableExpr(expr: InstanceType<typeof Expr.Variable>): string;
     abstract visitExpressionStmt(stmt: InstanceType<typeof Stmt.Expression>): void;
     abstract visitPrintStmt(stmt: InstanceType<typeof Stmt.Print>): void;
+    abstract visitVarStmt(stmt: InstanceType<typeof Stmt.Var>): void; 
+    abstract visitAssignExpr(expr: InstanceType<typeof Expr.Assign>): string;
 }
 
 export abstract class Stmt {
@@ -30,10 +33,17 @@ export abstract class Stmt {
         }
     }
 
+    static Var = class extends Stmt {
+        constructor(public name: Token, public initializer: Expr) {
+            super();
+        }
+    }
+
     // @ts-ignore
     public accept(visitor: Visitor): void {
         if (this instanceof Stmt.Expression) return visitor.visitExpressionStmt(this);
         if (this instanceof Stmt.Print) return visitor.visitPrintStmt(this);
+        if (this instanceof Stmt.Var) return visitor.visitVarStmt(this);
     }
 }
 
@@ -62,11 +72,25 @@ export abstract class Expr {
         }
     };
 
+    static Variable = class extends Expr {
+        constructor(public name: Token) {
+            super();
+        }
+    };
+
+    static Assign = class extends Expr {
+        constructor(public name: Token, public value: Expr) {
+            super();
+        }
+    };
+
     // @ts-ignore
     public accept(visitor: Visitor): (string | void) {
         if (this instanceof Expr.Unary) return visitor.visitUnaryExpr(this);
         if (this instanceof Expr.Grouping) return visitor.visitGroupingExpr(this);
         if (this instanceof Expr.Literal) return visitor.visitLiteralExpr(this);
         if (this instanceof Expr.Binary) return visitor.visitBinaryExpr(this);
-    } 
+        if (this instanceof Expr.Variable) return visitor.visitVariableExpr(this);
+        if (this instanceof Expr.Assign) return visitor.visitAssignExpr(this);
+    }
 }
