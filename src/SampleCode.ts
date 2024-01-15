@@ -1,12 +1,24 @@
 export const sampleCode = (): string =>{
     return `
-    var a = 1 * 2 + 3;
-    print a;
-    var b = 1 + 2 * 3;
-    a = 1 + 3;
-    print "a";
-    print a;
-    print b;
-`;
+        var a = "global a";
+        var b = "global b";
+        var c = "global c";
+        {
+            var a = "outer a";
+            var b = "outer b";
+            {
+                var a = "inner a";
+                print a;
+                print b;
+                print c;
+            }
+            print a;
+            print b;
+            print c;
+        }
+        print a;
+        print b;
+        print c;
+    `;
 }
 

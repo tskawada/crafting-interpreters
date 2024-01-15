@@ -18,6 +18,11 @@ export class Interpreter extends Visitor {
         console.log(value);
     }
 
+    public visitBlockStmt(stmt: InstanceType<typeof Stmt.Block>) {
+        this.executeBlock(stmt.statements, new Environment(this.environment));
+        return null;
+    }
+
     public visitVarStmt(stmt: InstanceType<typeof Stmt.Var>) {
         let value = null;
         if (stmt.initializer !== null) {
@@ -119,6 +124,18 @@ export class Interpreter extends Visitor {
             }
         } catch (err) {
             throw err;
+        }
+    }
+
+    private executeBlock(statements: Stmt[], environment: Environment) {
+        const previous = this.environment;
+        try {
+            this.environment = environment;
+            for (const statement of statements) {
+                this.execute(statement);
+            }
+        } finally {
+            this.environment = previous;
         }
     }
 }

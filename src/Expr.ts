@@ -16,6 +16,7 @@ export abstract class Visitor {
     abstract visitVariableExpr(expr: InstanceType<typeof Expr.Variable>): string;
     abstract visitExpressionStmt(stmt: InstanceType<typeof Stmt.Expression>): void;
     abstract visitPrintStmt(stmt: InstanceType<typeof Stmt.Print>): void;
+    abstract visitBlockStmt(stmt: InstanceType<typeof Stmt.Block>): void;
     abstract visitVarStmt(stmt: InstanceType<typeof Stmt.Var>): void; 
     abstract visitAssignExpr(expr: InstanceType<typeof Expr.Assign>): string;
 }
@@ -39,10 +40,19 @@ export abstract class Stmt {
         }
     }
 
+    static Block = class extends Stmt {
+        constructor(public statements: Stmt[]) {
+            super();
+        }
+    }
+
+    
+
     // @ts-ignore
     public accept(visitor: Visitor): void {
         if (this instanceof Stmt.Expression) return visitor.visitExpressionStmt(this);
         if (this instanceof Stmt.Print) return visitor.visitPrintStmt(this);
+        if (this instanceof Stmt.Block) return visitor.visitBlockStmt(this);
         if (this instanceof Stmt.Var) return visitor.visitVarStmt(this);
     }
 }

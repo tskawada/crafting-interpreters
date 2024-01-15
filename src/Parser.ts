@@ -39,6 +39,7 @@ export class Parser {
 
     private statement(): Expr {
         if (this.match(TokenType.PRINT)) return this.printStatement();
+        if (this.match(TokenType.LEFT_BRACE)) return new Stmt.Block(this.block());
         return this.expressionStatement();
     }
 
@@ -212,5 +213,16 @@ export class Parser {
 
             this.advance();
         }
+    }
+
+    private block(): Stmt[] {
+        const statements = [];
+
+        while (!this.typeCheck(TokenType.RIGHT_BRACE) && !this.isAtEnd) {
+            statements.push(this.declation());
+        }
+
+        this.consume(TokenType.RIGHT_BRACE, "Expect '}' after block.");
+        return statements;
     }
 }
