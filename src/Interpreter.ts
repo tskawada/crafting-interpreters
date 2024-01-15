@@ -1,9 +1,18 @@
-import { Expr, Visitor } from "./Expr";
+import { Expr, Stmt, Visitor } from "./Expr";
 import { TokenType } from "./Token";
 
 export class Interpreter extends Visitor {
-    constructor(private expr: Expr) {
+    constructor() {
         super();
+    }
+
+    public visitExpressionStmt(stmt: InstanceType<typeof Stmt.Expression>) {
+        this.evaluate(stmt.expression);
+    }
+
+    public visitPrintStmt(stmt: InstanceType<typeof Stmt.Print>) {
+        const value = this.evaluate(stmt.expression);
+        console.log(value);
     }
 
     public visitLiteralExpr(expr: InstanceType<typeof Expr.Literal>) {
@@ -77,9 +86,15 @@ export class Interpreter extends Visitor {
         return expr.accept(this);
     }
 
-    public interpret() {
+    private execute(stmt: Stmt): void {
+        stmt.accept(this);
+    }
+
+    public interpret(statements: Stmt[]) {
         try {
-            return this.evaluate(this.expr);
+            for (const statement of statements) {
+                this.execute(statement);
+            }
         } catch (err) {
             throw err;
         }

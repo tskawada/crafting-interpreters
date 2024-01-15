@@ -1,17 +1,34 @@
 import { Token, TokenType } from "./Token";
-import { Expr } from "./Expr";
+import { Expr, Stmt } from "./Expr";
 
 export class Parser {
     private current = 0;
 
     constructor(private tokens: Token[]) {}
 
-    public parse(): Expr {
-        try {
-            return this.expression;
-        } catch (err) {
-            throw err;
+    public parse(): Expr[] {
+        const statements = [];
+        while (!this.isAtEnd) {
+            statements.push(this.statement());
         }
+        return statements;
+    }
+
+    private statement(): Expr {
+        if (this.match(TokenType.PRINT)) return this.printStatement();
+        return this.expressionStatement();
+    }
+
+    private printStatement(): Expr {
+        const value = this.expression;
+        this.consume(TokenType.SEMICOLON, "Expect ';' after value.");
+        return new Stmt.Print(value);
+    }
+
+    private expressionStatement(): Expr {
+        const expr = this.expression;
+        this.consume(TokenType.SEMICOLON, "Expect ';' after expression.");
+        return new Stmt.Expression(expr);
     }
 
     private get expression(): Expr {
