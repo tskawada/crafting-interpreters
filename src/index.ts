@@ -20,15 +20,6 @@ const run = () => {
         const statements = parser.parse();
         const interpreter = new Interpreter();
         interpreter.interpret(statements);
-        
-        // if (PRINT_DATA) {
-            // console.log(`sample code:`);
-            // console.log(SAMPLE_CODE);
-            // console.log(`tokens:\n`);
-            // console.log(tokens);
-            // console.log(`\nresult:\n`);
-            // console.log(result);
-        // }
     } catch (err) {
         console.log(err);
         process.exit(1);
