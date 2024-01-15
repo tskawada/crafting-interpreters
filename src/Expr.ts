@@ -20,6 +20,7 @@ export abstract class Visitor {
     abstract visitBlockStmt(stmt: InstanceType<typeof Stmt.Block>): void;
     abstract visitVarStmt(stmt: InstanceType<typeof Stmt.Var>): void; 
     abstract visitIfStmt(stmt: InstanceType<typeof Stmt.If>): void;
+    abstract visitWhileStmt(stmt: InstanceType<typeof Stmt.While>): void;
     abstract visitAssignExpr(expr: InstanceType<typeof Expr.Assign>): string;
 }
 
@@ -52,7 +53,13 @@ export abstract class Stmt {
         constructor(public condition: Expr, public thenBranch: Stmt, public elseBranch: Stmt | null) {
             super();
         }
-    }    
+    }
+
+    static While = class extends Stmt {
+        constructor(public condition: Expr, public body: Stmt) {
+            super();
+        }
+    }
 
     // @ts-ignore
     public accept(visitor: Visitor): void {
@@ -61,6 +68,7 @@ export abstract class Stmt {
         if (this instanceof Stmt.Block) return visitor.visitBlockStmt(this);
         if (this instanceof Stmt.Var) return visitor.visitVarStmt(this);
         if (this instanceof Stmt.If) return visitor.visitIfStmt(this);
+        if (this instanceof Stmt.While) return visitor.visitWhileStmt(this);
     }
 }
 

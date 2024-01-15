@@ -41,6 +41,13 @@ export class Interpreter extends Visitor {
         return null;
     }
 
+    public visitWhileStmt(stmt: InstanceType<typeof Stmt.While>) {
+        while (this.isTruthy(this.evaluate(stmt.condition))) {
+            this.execute(stmt.body);
+        }
+        return null;
+    }
+
     public visitLiteralExpr(expr: InstanceType<typeof Expr.Literal>) {
         return expr.value;
     }
