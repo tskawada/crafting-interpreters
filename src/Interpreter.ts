@@ -48,6 +48,19 @@ export class Interpreter extends Visitor {
         return null;
     }
 
+    public visitForStmt(stmt: InstanceType<typeof Stmt.For>) {
+        if (stmt.initializer !== null) {
+            this.execute(stmt.initializer);
+        }
+        while (stmt.condition === null || this.isTruthy(this.evaluate(stmt.condition))) {
+            this.execute(stmt.body);
+            if (stmt.increment !== null) {
+                this.evaluate(stmt.increment);
+            }
+        }
+        return null;
+    }
+
     public visitLiteralExpr(expr: InstanceType<typeof Expr.Literal>) {
         return expr.value;
     }

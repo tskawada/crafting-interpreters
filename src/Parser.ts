@@ -42,6 +42,7 @@ export class Parser {
         if (this.match(TokenType.LEFT_BRACE)) return new Stmt.Block(this.block());
         if (this.match(TokenType.IF)) return this.ifStatement();
         if (this.match(TokenType.WHILE)) return this.whileStatement();
+        if (this.match(TokenType.FOR)) return this.forStatement();
         return this.expressionStatement();
     }
 
@@ -66,6 +67,33 @@ export class Parser {
         const body = this.statement();
 
         return new Stmt.While(condition, body);
+    }
+
+    private forStatement(): Stmt {
+        this.consume(TokenType.LEFT_PAREN, "Expect '(' after 'for'.");
+        let initializer = null;
+        if (this.match(TokenType.SEMICOLON)) initializer = null;
+        else if (this.match(TokenType.VAR)) initializer = this.varDeclation();
+        else initializer = this.expressionStatement();
+
+        let condition = null;
+        if (!this.match(TokenType.SEMICOLON)) condition = this.expression;
+        this.consume(TokenType.SEMICOLON, "Expect ';' after loop condition.");
+
+        let increment = null;
+        if (!this.match(TokenType.RIGHT_PAREN)) increment = this.expression;
+        this.consume(TokenType.RIGHT_PAREN, "Expect ')' after for clauses.");
+
+        let body = this.statement();
+
+        if (increment !== null) body = new Stmt.Block([body, new Stmt.Expression(increment)]);
+
+        if (condition === null) condition = new Expr.Literal(true);
+        body = new Stmt.While(condition, body);
+
+        if (initializer !== null) body = new Stmt.Block([initializer, body]);
+
+        return body;
     }
 
     private or = (): Expr => {

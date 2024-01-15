@@ -15,13 +15,14 @@ export abstract class Visitor {
     abstract visitLogicalExpr(expr: InstanceType<typeof Expr.Logical>): string;
     abstract visitUnaryExpr(expr: InstanceType<typeof Expr.Unary>): string;
     abstract visitVariableExpr(expr: InstanceType<typeof Expr.Variable>): string;
+    abstract visitAssignExpr(expr: InstanceType<typeof Expr.Assign>): string;
     abstract visitExpressionStmt(stmt: InstanceType<typeof Stmt.Expression>): void;
     abstract visitPrintStmt(stmt: InstanceType<typeof Stmt.Print>): void;
     abstract visitBlockStmt(stmt: InstanceType<typeof Stmt.Block>): void;
     abstract visitVarStmt(stmt: InstanceType<typeof Stmt.Var>): void; 
     abstract visitIfStmt(stmt: InstanceType<typeof Stmt.If>): void;
     abstract visitWhileStmt(stmt: InstanceType<typeof Stmt.While>): void;
-    abstract visitAssignExpr(expr: InstanceType<typeof Expr.Assign>): string;
+    abstract visitForStmt(stmt: InstanceType<typeof Stmt.For>): void;
 }
 
 export abstract class Stmt {
@@ -61,6 +62,12 @@ export abstract class Stmt {
         }
     }
 
+    static For = class extends Stmt {
+        constructor(public initializer: Stmt | null, public condition: Expr | null, public increment: Expr | null, public body: Stmt) {
+            super();
+        }
+    }
+
     // @ts-ignore
     public accept(visitor: Visitor): void {
         if (this instanceof Stmt.Expression) return visitor.visitExpressionStmt(this);
@@ -69,6 +76,7 @@ export abstract class Stmt {
         if (this instanceof Stmt.Var) return visitor.visitVarStmt(this);
         if (this instanceof Stmt.If) return visitor.visitIfStmt(this);
         if (this instanceof Stmt.While) return visitor.visitWhileStmt(this);
+        if (this instanceof Stmt.For) return visitor.visitForStmt(this);
     }
 }
 
