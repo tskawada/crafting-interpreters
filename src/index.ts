@@ -3,8 +3,6 @@ import { Parser } from "./Parser";
 import { Interpreter } from "./Interpreter";
 import { sampleCode } from "./SampleCode";
 
-const PRINT_DATA = true;
-
 const SAMPLE_CODE = sampleCode();
 
 const run = () => {
