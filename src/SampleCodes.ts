@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 
 export const sampleCode = (): string =>{
-    return fibonacci();
+    return rsa();
 }
 
 export const fibonacci = (): string => {
@@ -9,3 +9,7 @@ export const fibonacci = (): string => {
     return data;
 }
 
+export const rsa = (): string => {
+    const data = fs.readFileSync('./src/samples/rsa.lox', 'utf8');
+    return data;
+}
