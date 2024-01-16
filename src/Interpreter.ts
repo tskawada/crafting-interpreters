@@ -1,9 +1,13 @@
 import { Environment } from "./Environment";
 import { Expr, Stmt, Visitor } from "./Expr";
-import { TokenType } from "./Token";
+import { Token, TokenType } from "./Token";
+import { Callable } from "./Callable";
+import { Function } from "./Function";
+import { RuntimeError } from "./RuntimeError";
+import { Return } from "./Return";
 
 export class Interpreter extends Visitor {
-    private environment = new Environment();
+    public environment = new Environment();
 
     constructor() {
         super();
@@ -13,9 +17,21 @@ export class Interpreter extends Visitor {
         this.evaluate(stmt.expression);
     }
 
+    public visitFunctionStmt(stmt: InstanceType<typeof Stmt.Function>) {
+        const func = new Function(stmt);
+        this.environment.define(stmt.name.lexeme, func);
+        return null;
+    }
+
     public visitPrintStmt(stmt: InstanceType<typeof Stmt.Print>) {
         const value = this.evaluate(stmt.expression);
         console.log(value);
+    }
+
+    public visitReturnStmt(stmt: InstanceType<typeof Stmt.Return>) {
+        let value = null;
+        if (stmt.value !== null) value = this.evaluate(stmt.value);
+        throw new Return(value);
     }
 
     public visitBlockStmt(stmt: InstanceType<typeof Stmt.Block>) {
@@ -65,6 +81,26 @@ export class Interpreter extends Visitor {
         return expr.value;
     }
 
+    public visitCallExpr(expr: InstanceType<typeof Expr.Call>) {
+        const callee = this.evaluate(expr.callee);
+        const args = [];
+        for (const arg of expr.args) {
+            args.push(this.evaluate(arg));
+        }
+
+        if (!(callee instanceof Function)) {
+            throw new RuntimeError(expr.paren, "Can only call functions and classes.");
+        }
+
+        const func = callee as Callable;
+
+        if (args.length !== func.arity()) {
+            throw new RuntimeError(expr.paren, `Expected ${func.arity()} arguments but got ${args.length}.`);
+        }
+
+        return func.call(this, args);
+    }
+
     public visitGroupingExpr(expr: InstanceType<typeof Expr.Grouping>) {
         return this.evaluate(expr.expression);
     }
@@ -75,10 +111,13 @@ export class Interpreter extends Visitor {
 
         switch(expr.operator.tokenType) {
             case TokenType.MINUS:
+                this.checkNumberOperands(expr.operator, left, right);
                 return left - right;
             case TokenType.SLASH:
+                this.checkNumberOperands(expr.operator, left, right);
                 return left / right;
             case TokenType.STAR:
+                this.checkNumberOperands(expr.operator, left, right);
                 return left * right;
             case TokenType.PLUS:
                 if (typeof left === "number" && typeof right === "number") {
@@ -87,14 +126,18 @@ export class Interpreter extends Visitor {
                 if (typeof left === "string" && typeof right === "string") {
                     return left + right;
                 }
-                throw new Error("Operands must be two numbers or two strings.");
+                throw new RuntimeError(expr.operator, "Operands must be two numbers or two strings.");
             case TokenType.GREATER:
+                this.checkNumberOperands(expr.operator, left, right);
                 return left > right;
             case TokenType.GREATER_EQUAL:
+                this.checkNumberOperands(expr.operator, left, right);
                 return left >= right;
             case TokenType.LESS:
+                this.checkNumberOperands(expr.operator, left, right);
                 return left < right;
             case TokenType.LESS_EQUAL:
+                this.checkNumberOperands(expr.operator, left, right);
                 return left <= right;
             case TokenType.BANG_EQUAL:
                 return !this.isEqual(left, right);
@@ -118,9 +161,20 @@ export class Interpreter extends Visitor {
             case TokenType.BANG:
                 return !this.isTruthy(right);
             case TokenType.MINUS:
+                this.checkNumberOperand(expr.operator, right);
                 return -right;
         }
         return null;
+    }
+
+    private checkNumberOperand(operator: Token, operand: any) {
+        if (typeof operand === "number") return;
+        throw new RuntimeError(operator, `Operand must be a number.`);
+    }
+
+    private checkNumberOperands(operator: Token, left: any, right: any) {
+        if (typeof left === "number" && typeof right === "number") return;
+        throw new RuntimeError(operator, `Operands must be numbers.`);
     }
 
     public visitVariableExpr(expr: InstanceType<typeof Expr.Variable>) {
@@ -163,7 +217,7 @@ export class Interpreter extends Visitor {
         }
     }
 
-    private executeBlock(statements: Stmt[], environment: Environment) {
+    public executeBlock(statements: Stmt[], environment: Environment) {
         const previous = this.environment;
         try {
             this.environment = environment;

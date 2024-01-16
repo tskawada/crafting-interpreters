@@ -1,3 +1,4 @@
+import { RuntimeError } from "./RuntimeError";
 import { Token } from "./Token";
 
 export class Environment {
@@ -15,6 +16,7 @@ export class Environment {
     public get = (name: Token): any => {
         if (this.values.has(name.lexeme)) return this.values.get(name.lexeme);
         if (this.enclosing !== null) return this.enclosing.get(name);
+        throw new RuntimeError(name, `Undefined variable '${name.lexeme}'.`);
     }
 
     public assign = (name: Token, value: any): void => {
@@ -27,6 +29,8 @@ export class Environment {
             this.enclosing.assign(name, value);
             return;
         }
+
+        throw new RuntimeError(name, `Undefined variable '${name.lexeme}'.`);
 
         throw new Error(`Undefined variable '${name.lexeme}'.`);
     }

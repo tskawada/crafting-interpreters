@@ -10,6 +10,7 @@ export interface StmtConstructor {
 
 export abstract class Visitor {
     abstract visitBinaryExpr(expr: InstanceType<typeof Expr.Binary>): string;
+    abstract visitCallExpr(expr: InstanceType<typeof Expr.Call>): string;
     abstract visitGroupingExpr(expr: InstanceType<typeof Expr.Grouping>): string;
     abstract visitLiteralExpr(expr: InstanceType<typeof Expr.Literal>): string;
     abstract visitLogicalExpr(expr: InstanceType<typeof Expr.Logical>): string;
@@ -23,6 +24,8 @@ export abstract class Visitor {
     abstract visitIfStmt(stmt: InstanceType<typeof Stmt.If>): void;
     abstract visitWhileStmt(stmt: InstanceType<typeof Stmt.While>): void;
     abstract visitForStmt(stmt: InstanceType<typeof Stmt.For>): void;
+    abstract visitFunctionStmt(stmt: InstanceType<typeof Stmt.Function>): void;
+    abstract visitReturnStmt(stmt: InstanceType<typeof Stmt.Return>): void;
 }
 
 export abstract class Stmt {
@@ -68,6 +71,18 @@ export abstract class Stmt {
         }
     }
 
+    static Function = class extends Stmt {
+        constructor(public name: Token, public params: Token[], public body: Stmt[]) {
+            super();
+        }
+    }
+
+    static Return = class extends Stmt {
+        constructor(public keyword: Token, public value: Expr | null) {
+            super();
+        }
+    }
+
     // @ts-ignore
     public accept(visitor: Visitor): void {
         if (this instanceof Stmt.Expression) return visitor.visitExpressionStmt(this);
@@ -77,6 +92,8 @@ export abstract class Stmt {
         if (this instanceof Stmt.If) return visitor.visitIfStmt(this);
         if (this instanceof Stmt.While) return visitor.visitWhileStmt(this);
         if (this instanceof Stmt.For) return visitor.visitForStmt(this);
+        if (this instanceof Stmt.Function) return visitor.visitFunctionStmt(this);
+        if (this instanceof Stmt.Return) return visitor.visitReturnStmt(this);
     }
 }
 
@@ -86,6 +103,12 @@ export abstract class Expr {
             super();
         }
     };
+
+    static Call = class extends Expr {
+        constructor(public callee: Expr, public paren: Token, public args: Expr[]) {
+            super();
+        }
+    }
 
     static Unary = class extends Expr {
         constructor(public operator: Token, public right: Expr) {
@@ -126,6 +149,7 @@ export abstract class Expr {
     // @ts-ignore
     public accept(visitor: Visitor): (string | void) {
         if (this instanceof Expr.Unary) return visitor.visitUnaryExpr(this);
+        if (this instanceof Expr.Call) return visitor.visitCallExpr(this);
         if (this instanceof Expr.Grouping) return visitor.visitGroupingExpr(this);
         if (this instanceof Expr.Literal) return visitor.visitLiteralExpr(this);
         if (this instanceof Expr.Binary) return visitor.visitBinaryExpr(this);
