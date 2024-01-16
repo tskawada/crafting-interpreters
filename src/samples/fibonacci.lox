@@ -1,9 +1,27 @@
-var a = 0;
-var b = 1;
-var c = 0;
-while (a < 100) {
-   print b;
-   c = a + b;
-   a = b;
-   b = c;
+fun fibonacci(n) { 
+      var a = 0;
+      var b = 1;
+      var c = 0;
+      for (var i = 1; i < 10; i = i + 1) {
+         c = a + b;
+         a = b;
+         b = c;
+         print a;
+      }
+}
+
+fun fibonacci_recursive(n) {
+    if (n <= 1) return n;
+    return fibonacci_recursive(n - 1) + fibonacci_recursive(n - 2);
+}
+
+
+print "calculating fibonacci numbers:";
+fibonacci(10);
+
+print " ";
+
+print "calculating fibonacci numbers recursively:";
+for (var i = 1; i < 10; i = i + 1) {
+    print fibonacci_recursive(i);
 }
