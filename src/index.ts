@@ -1,7 +1,7 @@
 import { Lexer } from "./Lexer";
 import { Parser } from "./Parser";
 import { Interpreter } from "./Interpreter";
-import { sampleCode } from "./SampleCode";
+import { sampleCode } from "./SampleCodes";
 
 const SAMPLE_CODE = sampleCode();
 
