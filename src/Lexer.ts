@@ -76,6 +76,7 @@ export class Lexer {
             case '+': this.addToken(TokenType.PLUS); break;
             case ';': this.addToken(TokenType.SEMICOLON); break;
             case '*': this.addToken(TokenType.STAR); break;
+            case '%': this.addToken(TokenType.MODULO); break;
             case '!': this.addToken(this.match('=') ? TokenType.BANG_EQUAL : TokenType.BANG); break;
             case '=': this.addToken(this.match('=') ? TokenType.EQUAL_EQUAL : TokenType.EQUAL); break;
             case '<': this.addToken(this.match('=') ? TokenType.LESS_EQUAL : TokenType.LESS); break;

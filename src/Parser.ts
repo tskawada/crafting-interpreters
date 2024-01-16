@@ -222,9 +222,21 @@ export class Parser {
     }
 
     private get multiplication(): Expr {
-        let expr = this.unary;
+        let expr = this.modulo;
 
         while (this.match(TokenType.SLASH, TokenType.STAR)) {
+            const operator = this.previous;
+            const right = this.modulo;
+            expr = new Expr.Binary(expr, operator, right);
+        }
+
+        return expr;
+    }
+
+    private get modulo(): Expr {
+        let expr = this.unary;
+
+        while (this.match(TokenType.MODULO)) {
             const operator = this.previous;
             const right = this.unary;
             expr = new Expr.Binary(expr, operator, right);

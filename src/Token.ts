@@ -2,7 +2,7 @@ import { inspect } from "util";
 
 export enum TokenType {
     LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE,
-    COMMA, DOT, MINUS, PLUS, SEMICOLON, SLASH, STAR,
+    COMMA, DOT, MINUS, PLUS, SEMICOLON, SLASH, STAR, MODULO,
 
     BANG, BANG_EQUAL,
     EQUAL, EQUAL_EQUAL,

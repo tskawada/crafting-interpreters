@@ -119,6 +119,9 @@ export class Interpreter extends Visitor {
             case TokenType.STAR:
                 this.checkNumberOperands(expr.operator, left, right);
                 return left * right;
+            case TokenType.MODULO:
+                this.checkNumberOperands(expr.operator, left, right);
+                return left % right;
             case TokenType.PLUS:
                 if (typeof left === "number" && typeof right === "number") {
                     return left + right;
