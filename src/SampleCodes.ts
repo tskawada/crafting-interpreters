@@ -1,15 +1,13 @@
 import * as fs from 'fs';
 
+// dictionary of sample code file name
+export const sampleCodeFileName = {
+    fibonacci: 'fibonacci.lox',  // calc fibonacci number (recursive/iterative)
+    rsa: 'rsa.lox',  // rsa encryption/decryption
+}
+
+const FILE_NAME = sampleCodeFileName.rsa;
+
 export const sampleCode = (): string =>{
-    return rsa();
-}
-
-export const fibonacci = (): string => {
-    const data = fs.readFileSync('./src/samples/fibonacci.lox', 'utf8');
-    return data;
-}
-
-export const rsa = (): string => {
-    const data = fs.readFileSync('./src/samples/rsa.lox', 'utf8');
-    return data;
+    return fs.readFileSync(`./src/samples/${FILE_NAME}`, 'utf8');
 }
