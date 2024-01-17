@@ -84,14 +84,11 @@ var C = pow_mod(M, e, N);
 var P = pow_mod(C, D, N);
 
 print "";
-print "message:";
-print M;
-print "encrypted message:";
-print C;
-print "decrypted message:";
-print P;
+print "message           : " + M;
+print "encrypted message : " + C;
+print "decrypted message : " + P;
 print "";
 
-// check if the message is the same
+// check if the message is the sames
 if (M == P) print "message is the same. Success!";
 else print "message is not the same. Failure!";

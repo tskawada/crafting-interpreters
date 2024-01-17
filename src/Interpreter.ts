@@ -123,12 +123,10 @@ export class Interpreter extends Visitor {
                 this.checkNumberOperands(expr.operator, left, right);
                 return left % right;
             case TokenType.PLUS:
-                if (typeof left === "number" && typeof right === "number") {
-                    return left + right;
-                }
-                if (typeof left === "string" && typeof right === "string") {
-                    return left + right;
-                }
+                if (typeof left === "number" && typeof right === "number") return left + right;
+                if (typeof left === "string" && typeof right === "string") return left + right;
+                if (typeof left === "string" && typeof right === "number") return left + right.toString();
+                if (typeof left === "number" && typeof right === "string") return left.toString() + right;
                 throw new RuntimeError(expr.operator, "Operands must be two numbers or two strings.");
             case TokenType.GREATER:
                 this.checkNumberOperands(expr.operator, left, right);
