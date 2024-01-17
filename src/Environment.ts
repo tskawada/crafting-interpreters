@@ -14,7 +14,10 @@ export class Environment {
     }
 
     public get = (name: Token): any => {
-        if (this.values.has(name.lexeme)) return this.values.get(name.lexeme);
+        if (this.values.has(name.lexeme)) {
+            if (this.values.get(name.lexeme) !== null) return this.values.get(name.lexeme);
+            else throw new RuntimeError(name, `Variable '${name.lexeme}' is not initialized.`);
+        }
         if (this.enclosing !== null) return this.enclosing.get(name);
         throw new RuntimeError(name, `Undefined variable '${name.lexeme}'.`);
     }
@@ -31,7 +34,5 @@ export class Environment {
         }
 
         throw new RuntimeError(name, `Undefined variable '${name.lexeme}'.`);
-
-        throw new Error(`Undefined variable '${name.lexeme}'.`);
     }
 }
