@@ -4,14 +4,14 @@ import { Interpreter } from "./Interpreter";
 import { Stmt } from "./Expr";
 
 export class Function implements Callable {
-    constructor(private declaration: InstanceType<typeof Stmt.Function>) {}
+    constructor(private declaration: InstanceType<typeof Stmt.Function>, private closure: InstanceType<typeof Environment>) {}
 
     public arity(): number {
         return this.declaration.params.length;
     }
 
     public call(interpreter: InstanceType<typeof Interpreter>, args: any[]): any {
-        const environment = new Environment(interpreter.environment);
+        const environment = new Environment(this.closure);
         for (let i = 0; i < this.declaration.params.length; i++) {
             environment.define(this.declaration.params[i].lexeme, args[i]);
         }

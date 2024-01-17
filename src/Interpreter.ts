@@ -18,7 +18,7 @@ export class Interpreter extends Visitor {
     }
 
     public visitFunctionStmt(stmt: InstanceType<typeof Stmt.Function>) {
-        const func = new Function(stmt);
+        const func = new Function(stmt, this.environment);
         this.environment.define(stmt.name.lexeme, func);
         return null;
     }
