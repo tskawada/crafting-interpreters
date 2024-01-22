@@ -6,7 +6,7 @@ export const sampleCodeFileName = {
     rsa: 'rsa.lox',  // rsa encryption/decryption
 }
 
-const FILE_NAME = sampleCodeFileName.rsa;
+const FILE_NAME = sampleCodeFileName.fibonacci;
 
 export const sampleCode = (): string =>{
     return fs.readFileSync(`./src/samples/${FILE_NAME}`, 'utf8');

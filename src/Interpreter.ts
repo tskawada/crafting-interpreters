@@ -7,7 +7,9 @@ import { RuntimeError } from "./RuntimeError";
 import { Return } from "./Return";
 
 export class Interpreter extends Visitor {
-    public environment = new Environment();
+    public globals = new Environment();
+    public environment = this.globals;
+    private locals = new Map<Expr, number>();
 
     constructor() {
         super();
@@ -179,12 +181,22 @@ export class Interpreter extends Visitor {
     }
 
     public visitVariableExpr(expr: InstanceType<typeof Expr.Variable>) {
-        return this.environment.get(expr.name);
+        return this.lookUpVariable(expr.name, expr);
+    }
+
+    private lookUpVariable(name: Token, expr: Expr) {
+        const distance = this.locals.get(expr);
+        if (distance !== undefined) return this.environment.getAt(distance, name.lexeme);
+        return this.globals.get(name); 
     }
 
     public visitAssignExpr(expr: InstanceType<typeof Expr.Assign>) {
         const value = this.evaluate(expr.value);
-        this.environment.assign(expr.name, value);
+
+        const distance = this.locals.get(expr);
+        if (distance !== undefined) this.environment.assignAt(distance, expr.name, value);
+        else this.globals.assign(expr.name, value);
+
         return value;
     }
 
@@ -206,6 +218,10 @@ export class Interpreter extends Visitor {
 
     private execute(stmt: Stmt): void {
         stmt.accept(this);
+    }
+
+    public resolve(expr: Expr, depth: number) {
+        this.locals.set(expr, depth);
     }
 
     public interpret(statements: Stmt[]) {

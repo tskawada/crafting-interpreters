@@ -9,14 +9,14 @@ export interface StmtConstructor {
 }
 
 export abstract class Visitor {
-    abstract visitBinaryExpr(expr: InstanceType<typeof Expr.Binary>): string;
-    abstract visitCallExpr(expr: InstanceType<typeof Expr.Call>): string;
-    abstract visitGroupingExpr(expr: InstanceType<typeof Expr.Grouping>): string;
-    abstract visitLiteralExpr(expr: InstanceType<typeof Expr.Literal>): string;
-    abstract visitLogicalExpr(expr: InstanceType<typeof Expr.Logical>): string;
-    abstract visitUnaryExpr(expr: InstanceType<typeof Expr.Unary>): string;
-    abstract visitVariableExpr(expr: InstanceType<typeof Expr.Variable>): string;
-    abstract visitAssignExpr(expr: InstanceType<typeof Expr.Assign>): string;
+    abstract visitBinaryExpr(expr: InstanceType<typeof Expr.Binary>): any;
+    abstract visitCallExpr(expr: InstanceType<typeof Expr.Call>): any;
+    abstract visitGroupingExpr(expr: InstanceType<typeof Expr.Grouping>): any;
+    abstract visitLiteralExpr(expr: InstanceType<typeof Expr.Literal>): any;
+    abstract visitLogicalExpr(expr: InstanceType<typeof Expr.Logical>): any;
+    abstract visitUnaryExpr(expr: InstanceType<typeof Expr.Unary>): any;
+    abstract visitVariableExpr(expr: InstanceType<typeof Expr.Variable>): any;
+    abstract visitAssignExpr(expr: InstanceType<typeof Expr.Assign>): any;
     abstract visitExpressionStmt(stmt: InstanceType<typeof Stmt.Expression>): void;
     abstract visitPrintStmt(stmt: InstanceType<typeof Stmt.Print>): void;
     abstract visitBlockStmt(stmt: InstanceType<typeof Stmt.Block>): void;
