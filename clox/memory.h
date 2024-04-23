@@ -9,4 +9,6 @@
 #define GROW_ARRAY(previous, type, oldCount, newCount) \
     (type*)reallocate(previous, sizeof(type) * (oldCount), sizeof(type) * (newCount))
 
+void* reallocate(void* previous, size_t oldSize, size_t newSize);
+
 #endif
