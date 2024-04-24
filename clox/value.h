@@ -24,6 +24,9 @@ typedef struct {
 #define NIL_VAL           ((Value){VAL_NIL, {.number = 0}})
 #define NUMBER_VAL(value) ((Value){VAL_NUMBER, {.number = value}})
 
+#define IS_BOOL(value)   ((value).type == VAL_BOOL)
+#define IS_NIL(value)    ((value).type == VAL_NIL)
+#define IS_NUMBER(value) ((value).type == VAL_NUMBER)
 
 typedef double Value;
 
