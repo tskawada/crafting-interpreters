@@ -57,7 +57,7 @@ static InterpretResult run() {
                 push(constant);
                 break;
             }
-            case OP_NAGATE: push(-pop()); break;
+            case OP_NEGATE: push(-pop()); break;
             case OP_ADD: BINARY_OP(+); break;
             case OP_SUBTRACT: BINARY_OP(-); break;
             case OP_MULTIPLY: BINARY_OP(*); break;
