@@ -3,7 +3,7 @@
 
 #include "scanner.h"
 #include "chunk.h"
-#include "debug.h"
+#include "object.h"
 
 #ifdef DEBUG_PRINT_CODE
 #include "debug.h"
