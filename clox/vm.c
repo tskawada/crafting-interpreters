@@ -50,6 +50,7 @@ static Value peek(int distance) {
 static InterpretResult run() {
 #define READ_BYTE() (*vm.ip++)
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
+// This is macro monster!
 #define BINARY_OP(valueType, op) \
     if (!IS_NUMBER(peek(0)) || !IS_NUMBER(peek(1))) { \
         runtimeError("Operands must be numbers."); \
@@ -82,7 +83,7 @@ static InterpretResult run() {
             }
             case OP_NEGATE:
                 if (!IS_NUMBER(peek(0))) {
-                    runtimeRrror("Operand must be a number.");
+                    runtimeError("Operand must be a number.");
                     return INTERPRET_RUNTIME_ERROR;
                 }
                 push(NUMBER_VAL(-AS_NUMBER(pop())));
