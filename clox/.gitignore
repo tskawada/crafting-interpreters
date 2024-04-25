@@ -3,5 +3,6 @@
 !*.*
 
 *.clox
+test/*
 
 docs.md
