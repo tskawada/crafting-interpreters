@@ -66,11 +66,11 @@ static bool match(TokenType type) {
     return true;
 }
 
-static void emitByte(uint8_t byte) {
+static void emitByte(uint16_t byte) {
     writeChunk(currentChunk(), byte, parser.previous.line);
 }
 
-static void emitBytes(uint8_t byte1, uint8_t byte2) {
+static void emitBytes(uint16_t byte1, uint16_t byte2) {
     emitByte(byte1);
     emitByte(byte2);
 }
@@ -84,14 +84,14 @@ static void grouping(bool canAssign) {
     consume(TOKEN_RIGHT_PAREN, "Expect ')' after expression.");
 }
 
-static uint8_t makeConstant(Value value) {
+static uint16_t makeConstant(Value value) {
     int constant = addConstant(currentChunk(), value);
-    if (constant > UINT8_MAX) {
+    if (constant > UINT16_MAX) {
         error("Too many constants in one chunk.");
         return 0;
     }
 
-    return (uint8_t)constant;
+    return (uint16_t)constant;
 }
 
 static void emitConstant(Value value) {
@@ -107,7 +107,7 @@ static void endCompiler() {
 #endif
 }
 
-static uint8_t identifierConstant(Token* name) {
+static uint16_t identifierConstant(Token* name) {
     return makeConstant(OBJ_VAL(copyString(name->start, name->length)));
 }
 
@@ -154,7 +154,7 @@ static void string(bool canAssign) {
 }
 
 static void namedVariable(Token name, bool canAssign) {
-    uint8_t arg = identifierConstant(&name);
+    uint16_t arg = identifierConstant(&name);
 
     if (canAssign && match(TOKEN_EQUAL)) {
         expression();
@@ -255,17 +255,17 @@ static void expression() {
     parsePrecedence(PREC_ASSIGNMENT);
 }
 
-static uint8_t parseVariable(const char* errorMessage) {
+static uint16_t parseVariable(const char* errorMessage) {
     consume(TOKEN_IDENTIFIER, errorMessage);
     return identifierConstant(&parser.previous);
 }
 
-static void defineVariable(uint8_t global) {
+static void defineVariable(uint16_t global) {
     emitBytes(OP_DEFINE_GLOBAL, global);
 }
 
 static void varDeclaration() {
-    uint8_t global = parseVariable("Expect variable name.");
+    uint16_t global = parseVariable("Expect variable name.");
 
     if (match(TOKEN_EQUAL)) {
         expression();

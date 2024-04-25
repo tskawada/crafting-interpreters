@@ -5,11 +5,11 @@
 #include "value.h"
 #include "table.h"
 
-#define STACK_MAX 256
+#define STACK_MAX 512
 
 typedef struct {
     Chunk* chunk;
-    uint8_t* ip;
+    uint16_t* ip;
     Value stack[STACK_MAX];
     Value* stackTop;
     Table strings;
