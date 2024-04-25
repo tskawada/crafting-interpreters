@@ -43,7 +43,7 @@ static void advance() {
         parser.current = scanToken();
         if (parser.current.type != TOKEN_ERROR) break;
     
-    errorAtCurrent(parser.current.start);
+        errorAtCurrent(parser.current.start);
     }
 }
 
@@ -260,7 +260,7 @@ static uint8_t parseVariable(const char* errorMessage) {
     return identifierConstant(&parser.previous);
 }
 
-static void declareVariable(uint8_t global) {
+static void defineVariable(uint8_t global) {
     emitBytes(OP_DEFINE_GLOBAL, global);
 }
 
@@ -273,6 +273,8 @@ static void varDeclaration() {
         emitByte(OP_NIL);
     }
     consume(TOKEN_SEMICOLON, "Expect ';' after variable declaration.");
+
+    defineVariable(global);
 }
 
 static void expressionStatement() {
