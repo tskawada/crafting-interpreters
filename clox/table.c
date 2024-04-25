@@ -35,9 +35,9 @@ static Entry* findEntry(Entry* entries, int capacity, ObjString* key) {
             // found the key.
             return entry;
         }
+    
+        index = (index + 1) % capacity;
     }
-
-    index = (index + 1) % capacity;
 }
 
 void adjustCapacity(Table* table, int capacity) {
