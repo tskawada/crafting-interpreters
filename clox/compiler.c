@@ -39,7 +39,7 @@ static void errorAtCurrent(const char* message) {
 static void advance() {
     parser.previous = parser.current;
 
-    for(;;) {
+    for (;;) {
         parser.current = scanToken();
         if (parser.current.type != TOKEN_ERROR) break;
     
