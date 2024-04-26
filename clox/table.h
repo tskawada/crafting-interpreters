@@ -4,7 +4,7 @@
 #include "common.h"
 #include "value.h"
 
-#define TABLE_MAX_LOAD 0.75
+#define TABLE_MAX_LOAD 0.8
 
 typedef struct {
     ObjString* key;
