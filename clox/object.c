@@ -28,14 +28,37 @@ static ObjString* allocateString(char* chars, int length, uint32_t hash) {
     return string;
 }
 
+static uint32_t murmur_32_scramble(uint32_t k) {
+    k *= 0xcc9e2d51;
+    k = (k << 15) | (k >> 17);
+    k *= 0x1b873593;
+    return k;
+}
+
 static uint32_t hashString(const char* key, int length) {
-    uint32_t hash = 2166136261u;
-    for (int i = 0; i < length; i++) {
-        hash ^= (uint8_t)key[i];
-        hash *= 16777619;
+    // Murmur3 hash algorithm
+    uint32_t h = 0x00000000;
+    uint32_t k;
+    for (size_t i = length >> 2; i; i--) {
+        memcpy(&k, key, sizeof(uint32_t));
+        key += sizeof(uint32_t);
+        h ^= murmur_32_scramble(k);
+        h = (h << 13) | (h >> 19);
+        h = h * 5 + 0xe6546b64;
     }
-    
-    return hash;
+    k = 0x00000000;
+    for (size_t i = length & 3; i; i--) {
+        k <<= 8;
+        k |= *key++;
+    }
+    h ^= murmur_32_scramble(k);
+    h ^= length;
+    h ^= h >> 16;
+    h *= 0x85ebca6b;
+    h ^= h >> 13;
+    h *= 0xc2b2ae35;
+    h ^= h >> 16;
+    return h;
 }
 
 ObjString* copyString(const char* chars, int length) {
