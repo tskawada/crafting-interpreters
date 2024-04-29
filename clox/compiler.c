@@ -225,7 +225,7 @@ ParseRule rules[] = {
     [TOKEN_EOF]           = {NULL,     NULL,   PREC_NONE},
 };
 
-static void parsePrecedence(Precedence precedence) {
+void parsePrecedence(Precedence precedence) {
     advance();
     ParseFn prefixRule = getRule(parser.previous.type)->prefix;
     if (prefixRule == NULL) {
@@ -247,11 +247,11 @@ static void parsePrecedence(Precedence precedence) {
     }
 }
 
-static ParseRule* getRule(TokenType type) {
+ParseRule* getRule(TokenType type) {
     return &rules[type];
 }
 
-static void expression() {
+void expression() {
     parsePrecedence(PREC_ASSIGNMENT);
 }
 
@@ -312,7 +312,7 @@ static void synchronize() {
     }
 }
 
-static void declaration() {
+void declaration() {
     if (match(TOKEN_VAR)) {
         varDeclaration();
     } else {
@@ -322,7 +322,7 @@ static void declaration() {
     if (parser.panicMode) synchronize();
 }
 
-static void statement() {
+void statement() {
     if (match(TOKEN_PRINT)) {
         printStatement();
     } else {
