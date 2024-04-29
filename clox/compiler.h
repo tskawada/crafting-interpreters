@@ -9,6 +9,8 @@
 #include "debug.h"
 #endif
 
+#define UINT8_COUNT (UINT8_MAX + 1)
+
 typedef struct {
     Token current;
     Token previous;
@@ -33,10 +35,21 @@ typedef enum {
 typedef void (*ParseFn)(bool canAssign);
 
 typedef struct {
+    Token name;
+    int depth;
+} Local;
+
+typedef struct {
     ParseFn prefix;
     ParseFn infix;
     Precedence precedence;
 } ParseRule;
+
+typedef struct {
+    Local locals[UINT8_COUNT];
+    int localCount;
+    int scopeDepth;
+} Compiler;
 
 bool compile(const char* source, Chunk* chunk);
 void expression();
