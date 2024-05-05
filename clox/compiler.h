@@ -9,8 +9,6 @@
 #include "debug.h"
 #endif
 
-#define UINT8_COUNT (UINT8_MAX + 1)
-
 typedef struct {
     Token current;
     Token previous;
