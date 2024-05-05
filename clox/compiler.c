@@ -509,7 +509,7 @@ static void whileStatement() {
     consume(TOKEN_RIGHT_PAREN, "Expect ')' after condition.");
 
     int exitJump = emitJump(OP_JUMP_IF_FALSE);
-    enitByte(OP_POP);
+    emitByte(OP_POP);
     statement();
     emitLoop(loopStart);
 
