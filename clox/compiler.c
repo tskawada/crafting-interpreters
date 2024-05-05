@@ -292,6 +292,26 @@ static void unary(bool canAssign) {
     }
 }
 
+static void and_(bool canAssign) {
+    int endJump = emitJump(OP_JUMP_IF_FALSE);
+
+    emitByte(OP_POP);
+    parsePrecedence(PREC_AND);
+
+    patchJump(endJump);
+}
+
+static void or_(bool canAssign) {
+    int elseJump = emitJump(OP_JUMP_IF_FALSE);
+    int endJump = emitJump(OP_JUMP);
+
+    patchJump(elseJump);
+    emitByte(OP_POP);
+
+    parsePrecedence(PREC_OR);
+    patchJump(endJump);
+}
+
 ParseRule rules[] = {
     [TOKEN_LEFT_PAREN]    = {grouping, NULL,   PREC_NONE},
     [TOKEN_RIGHT_PAREN]   = {NULL,     NULL,   PREC_NONE},
@@ -392,26 +412,6 @@ static void defineVariable(uint8_t global) {
         return;
     }
     emitBytes(OP_DEFINE_GLOBAL, global);
-}
-
-static void and_(bool canAssign) {
-    int endJump = emitJump(OP_JUMP_IF_FALSE);
-
-    emitByte(OP_POP);
-    parsePrecedence(PREC_AND);
-
-    patchJump(endJump);
-}
-
-static void or_(bool canAssign) {
-    int elseJump = emitJump(OP_JUMP_IF_FALSE);
-    int endJump = emitJump(OP_JUMP);
-
-    patchJump(elseJump);
-    emitByte(OP_POP);
-
-    parsePrecedence(PREC_OR);
-    patchJump(endJump);
 }
 
 static void varDeclaration() {
