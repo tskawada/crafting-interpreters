@@ -48,7 +48,7 @@ typedef struct {
     Precedence precedence;
 } ParseRule;
 
-typedef struct {
+typedef struct Compiler {
     struct Compiler* enclosing;
     ObjFunction* function;
     FunctionType type;

@@ -45,6 +45,7 @@ static inline bool isObjType(Value value, ObjType type) {
 ObjString* takeString(char* chars, int length);
 ObjString* copyString(const char* chars, int length);
 ObjFunction* newFunction();
+ObjNative* newNative(NativeFn function);
 void printObject(Value value);
 
 #endif
