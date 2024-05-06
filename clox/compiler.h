@@ -37,6 +37,11 @@ typedef struct {
     int depth;
 } Local;
 
+typedef enum {
+    TYPE_FUNCTION,
+    TYPE_SCRIPT
+} FunctionType;
+
 typedef struct {
     ParseFn prefix;
     ParseFn infix;
@@ -44,12 +49,16 @@ typedef struct {
 } ParseRule;
 
 typedef struct {
+    struct Compiler* enclosing;
+    ObjFunction* function;
+    FunctionType type;
+
     Local locals[UINT8_COUNT];
     int localCount;
     int scopeDepth;
 } Compiler;
 
-bool compile(const char* source, Chunk* chunk);
+ObjFunction* compile(const char* source);
 void expression();
 ParseRule* getRule(TokenType type);
 void parsePrecedence(Precedence precedence);
