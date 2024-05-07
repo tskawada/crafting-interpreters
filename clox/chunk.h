@@ -10,6 +10,8 @@ typedef enum {
     OP_TRUE,
     OP_FALSE,
     OP_POP,
+    OP_GET_SUBSCRIPT,
+    OP_SET_SUBSCRIPT,
     OP_GET_LOCAL,
     OP_SET_LOCAL,
     OP_DEFINE_GLOBAL,
