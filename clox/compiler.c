@@ -351,9 +351,26 @@ static void or_(bool canAssign) {
     patchJump(endJump);
 }
 
+static void array(bool canAssign) {
+    if (match(TOKEN_RIGHT_BRACKET)) {
+        emitBytes(OP_ARRAY, (uint8_t)0);
+    } else {
+        expression();
+        int count = 1;
+        while (match(TOKEN_COMMA)) {
+            expression();
+            count++;
+        }
+        consume(TOKEN_RIGHT_BRACKET, "Expect ']' after array elements.");
+        emitBytes(OP_ARRAY, (uint8_t)count);
+    }
+}
+
 ParseRule rules[] = {
     [TOKEN_LEFT_PAREN]    = {grouping, call,   PREC_CALL},
     [TOKEN_RIGHT_PAREN]   = {NULL,     NULL,   PREC_NONE},
+    [TOKEN_LEFT_BRACKET]  = {array,    NULL,   PREC_NONE},
+    [TOKEN_RIGHT_BRACKET] = {NULL,     NULL,   PREC_NONE},
     [TOKEN_LEFT_BRACE]    = {NULL,     NULL,   PREC_NONE},
     [TOKEN_RIGHT_BRACE]   = {NULL,     NULL,   PREC_NONE},
     [TOKEN_COMMA]         = {NULL,     NULL,   PREC_NONE},

@@ -117,6 +117,16 @@ static bool callValue(Value callee, int argCount) {
     return false;
 }
 
+static void writeToArray(ObjArray* array, Value value) {
+    if (array->capacity < array->count + 1) {
+        int oldCapacity = array->capacity;
+        array->capacity = GROW_CAPACITY(oldCapacity);
+        array->values = GROW_ARRAY(Value, array->values, oldCapacity, array->capacity);
+    }
+    array->values[array->count] = value;
+    array->count++;
+}
+
 static bool isFalsey(Value value) {
     return IS_NIL(value) || (IS_BOOL(value) && !AS_BOOL(value));
 }
@@ -271,6 +281,18 @@ static InterpretResult run() {
                     return INTERPRET_RUNTIME_ERROR;
                 }
                 frame = &vm.frames[vm.frameCount - 1];
+                break;
+            }
+            case OP_ARRAY: {
+                int count = READ_BYTE();
+                ObjArray* array = newArray();
+                push(OBJ_VAL(array));
+                for (int i = count; i > 0; i--) {
+                    writeToArray(array, peek(i));
+                }
+                pop();
+                vm.stackTop -= count;
+                push(OBJ_VAL(array));
                 break;
             }
             case OP_RETURN: {

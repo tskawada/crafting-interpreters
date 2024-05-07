@@ -19,12 +19,20 @@ static Obj* allocateObject(size_t size, ObjType type) {
     return object;
 }
 
-ObjFunction *newFunction() {
+ObjFunction* newFunction() {
     ObjFunction* function = ALLOCATE_OBJ(ObjFunction, OBJ_FUNCTION);
     function->arity = 0;
     function->name = NULL;
     initChunk(&function->chunk);
     return function;
+}
+
+ObjArray* newArray() {
+    ObjArray* array = ALLOCATE_OBJ(ObjArray, OBJ_ARRAY);
+    array->count = 0;
+    array->capacity = 0;
+    array->values = NULL;
+    return array;
 }
 
 ObjNative* newNative(NativeFn function) {
@@ -98,6 +106,16 @@ void printObject(Value value) {
     switch (OBJ_TYPE(value)) {
         case OBJ_FUNCTION:
             printFunction(AS_FUNCTION(value));
+            break;
+        case OBJ_ARRAY:
+            printf("[");
+            for (int i = 0; i < AS_ARRAY(value)->count; i++) {
+                printValue(AS_ARRAY(value)->values[i]);
+                if (i < AS_ARRAY(value)->count - 1) {
+                    printf(", ");
+                }
+            }
+            printf("]");
             break;
         case OBJ_NATIVE:
             printf("<native fn>");
