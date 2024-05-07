@@ -83,3 +83,15 @@ static Value min(int argCount, Value* args) {
     }
     return NUMBER_VAL(min);
 }
+
+static Value len(int argCount, Value* args) {
+    if (IS_ARRAY(args[0])) {
+        ObjArray* array = AS_ARRAY(args[0]);
+        return NUMBER_VAL(array->count);
+    } else if (IS_STRING(args[0])) {
+        ObjString* string = AS_STRING(args[0]);
+        return NUMBER_VAL(string->length);
+    } else {
+        return NIL_VAL;
+    }
+}

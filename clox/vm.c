@@ -61,6 +61,7 @@ void initVM() {
     defineNative("loadFile", loadFile);
     defineNative("max", max);
     defineNative("min", min);
+    defineNative("len", len);
 }
 
 void freeVM() {
