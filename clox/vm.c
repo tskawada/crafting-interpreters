@@ -59,6 +59,9 @@ void initVM() {
     defineNative("sleep", sleepMicrosec);
     defineNative("isExists", isExists);
     defineNative("loadFile", loadFile);
+    defineNative("max", max);
+    defineNative("min", min);
+    defineNative("len", len);
 }
 
 void freeVM() {
@@ -115,6 +118,20 @@ static bool callValue(Value callee, int argCount) {
     }
     runtimeError("Can only call functions.");
     return false;
+}
+
+static void writeToArray(ObjArray* array, Value value) {
+    if (array->capacity < array->count + 1) {
+        int oldCapacity = array->capacity;
+        array->capacity = GROW_CAPACITY(oldCapacity);
+        array->values = GROW_ARRAY(Value, array->values, oldCapacity, array->capacity);
+    }
+    array->values[array->count] = value;
+    array->count++;
+}
+
+static void insertToArray(ObjArray* array, int index, Value value) {
+    array->values[index] = value;
 }
 
 static bool isFalsey(Value value) {
@@ -176,6 +193,48 @@ static InterpretResult run() {
             case OP_TRUE:     push(BOOL_VAL(true)); break;
             case OP_FALSE:    push(BOOL_VAL(false)); break;
             case OP_POP:      pop(); break;
+            case OP_GET_SUBSCRIPT: {
+                if (IS_NUMBER(peek(0))) {
+                    int index = AS_NUMBER(peek(0));
+                    pop();
+                    if (IS_STRING(peek(0))) {
+                        ObjString* string = AS_STRING(pop());
+                        if (index < 0 || index > string->length) {
+                            runtimeError("String index is out of bound: %d.", index);
+                        }
+                        else {
+                            char chars[2] = {string->chars[index], '\0'};
+                            ObjString* element = copyString(chars, 1);
+                            push(OBJ_VAL(element));
+                        }
+                    } else if (IS_ARRAY(peek(0))) {
+                        ObjArray* array = AS_ARRAY(pop());
+                        if (index < 0 || index > array->count) {
+                            runtimeError("Array index is out of bound: %d.", index);
+                        }
+                        else {
+                            Value element = array->values[index];
+                            push(element);
+                        }
+                    }
+                }
+                break;
+            }
+            case OP_SET_SUBSCRIPT: {
+                if (IS_NUMBER(peek(1)) && IS_ARRAY(peek(2))) {
+                    Value element = pop();
+                    int index = AS_NUMBER(pop());
+                    ObjArray* array = AS_ARRAY(pop());
+                    if (index < 0 || index > array->count - 1) {
+                        runtimeError("Array index is out of bound: %d.", index);
+                    }
+                    else {
+                        insertToArray(array, index, element);
+                        push(OBJ_VAL(array));
+                    }
+                }
+                break;
+            }
             case OP_GET_LOCAL: {
                 uint8_t slot = READ_BYTE();
                 push(frame->slots[slot]);
@@ -271,6 +330,18 @@ static InterpretResult run() {
                     return INTERPRET_RUNTIME_ERROR;
                 }
                 frame = &vm.frames[vm.frameCount - 1];
+                break;
+            }
+            case OP_ARRAY: {
+                int count = READ_BYTE();
+                ObjArray* array = newArray();
+                push(OBJ_VAL(array));
+                for (int i = count; i > 0; i--) {
+                    writeToArray(array, peek(i));
+                }
+                pop();
+                vm.stackTop -= count;
+                push(OBJ_VAL(array));
                 break;
             }
             case OP_RETURN: {

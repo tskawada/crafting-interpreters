@@ -13,27 +13,27 @@ void disassembleChunk(Chunk* chunk, const char* name) {
 
 static int constantInstruction(const char* name, Chunk* chunk, int offset) {
     uint8_t constant = chunk->code[offset + 1];
-    printf("%-16s %4d '", name, constant);
+    printf("\033[0;32m%-16s\033[0m %4d '", name, constant);
     printValue(chunk->constants.values[constant]);
     printf("'\n");
     return offset + 2;
 }
 
 static int simpleInstruction(const char* name, int offset) {
-    printf("%s\n", name);
+    printf("\033[0;32m%-16s\033[0m\n", name);
     return offset + 1;
 }
 
 static int byteInstruction(const char* name, Chunk* chunk, int offset) {
     uint8_t slot = chunk->code[offset + 1];
-    printf("%-16s %4d\n", name, slot);
+    printf("\033[0;32m%-16s\033[0m %4d\n", name, slot);
     return offset + 2;
 }
 
 static int jumpInstruction(const char* name, int sign, Chunk* chunk, int offset) {
     uint16_t jump = (uint16_t)(chunk->code[offset + 1] << 8);
     jump |= chunk->code[offset + 2];
-    printf("%-16s %4d -> %d\n", name, offset, offset + 3 + sign * jump);
+    printf("\033[0;32m%-16s\033[0m \033[0;31m%4d -> %d\033[0m\n", name, offset, offset + 3 + sign * jump);
     return offset + 3;
 }
 
@@ -58,6 +58,10 @@ int disassembleInstruction(Chunk* chunk, int offset) {
             return simpleInstruction("OP_FALSE", offset);
         case OP_POP:
             return simpleInstruction("OP_POP", offset);
+        case OP_GET_SUBSCRIPT:
+            return simpleInstruction("OP_GET_SUBSCRIPT", offset);
+        case OP_SET_SUBSCRIPT:
+            return simpleInstruction("OP_SET_SUBSCRIPT", offset);
         case OP_GET_LOCAL:
             return byteInstruction("OP_GET_LOCAL", chunk, offset);
         case OP_SET_LOCAL:
@@ -96,6 +100,8 @@ int disassembleInstruction(Chunk* chunk, int offset) {
             return jumpInstruction("OP_LOOP", -1, chunk, offset);
         case OP_CALL:
             return byteInstruction("OP_CALL", chunk, offset);
+        case OP_ARRAY:
+            return byteInstruction("OP_ARRAY", chunk, offset);
         case OP_RETURN:
             return simpleInstruction("OP_RETURN", offset);
         default:
