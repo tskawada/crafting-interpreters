@@ -37,11 +37,6 @@ typedef struct {
     int depth;
 } Local;
 
-typedef struct {
-    uint8_t index;
-    bool isLocal;
-} Upvalue;
-
 typedef enum {
     TYPE_FUNCTION,
     TYPE_SCRIPT
@@ -60,7 +55,6 @@ typedef struct Compiler {
 
     Local locals[UINT8_COUNT];
     int localCount;
-    Upvalue upvalues[UINT8_COUNT];
     int scopeDepth;
 } Compiler;
 
