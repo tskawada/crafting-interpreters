@@ -60,9 +60,6 @@ void initVM() {
     defineNative("sleep", sleepMicrosec);
     defineNative("isExists", isExists);
     defineNative("loadFile", loadFile);
-    defineNative("max", max);
-    defineNative("min", min);
-    defineNative("len", len);
 }
 
 void freeVM() {
