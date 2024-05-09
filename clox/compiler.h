@@ -71,5 +71,6 @@ ParseRule* getRule(TokenType type);
 void parsePrecedence(Precedence precedence);
 void declaration();
 void statement();
+void markCompilerRoots();
 
 #endif

@@ -53,6 +53,9 @@ static void defineNative(const char* name, NativeFn function) {
 void initVM() {
     resetStack();
     vm.objects = NULL;
+    vm.grayCount = 0;
+    vm.grayCapacity = 0;
+    vm.grayStack = NULL;
     initTable(&vm.globals);
     initTable(&vm.strings);
 
@@ -152,17 +155,17 @@ static void closeUpvalues(Value* last) {
 }
 
 static void writeToArray(ObjArray* array, Value value) {
-    if (array->capacity < array->count + 1) {
-        int oldCapacity = array->capacity;
-        array->capacity = GROW_CAPACITY(oldCapacity);
-        array->values = GROW_ARRAY(Value, array->values, oldCapacity, array->capacity);
+    if (array->elements.capacity < array->elements.count + 1) {
+        int oldCapacity = array->elements.capacity;
+        array->elements.capacity = GROW_CAPACITY(oldCapacity);
+        array->elements.values = GROW_ARRAY(Value, array->elements.values, oldCapacity, array->elements.capacity);
     }
-    array->values[array->count] = value;
-    array->count++;
+    array->elements.values[array->elements.count] = value;
+    array->elements.count++;
 }
 
 static void insertToArray(ObjArray* array, int index, Value value) {
-    array->values[index] = value;
+    array->elements.values[index] = value;
 }
 
 static bool isFalsey(Value value) {
@@ -240,11 +243,11 @@ static InterpretResult run() {
                         }
                     } else if (IS_ARRAY(peek(0))) {
                         ObjArray* array = AS_ARRAY(pop());
-                        if (index < 0 || index > array->count) {
+                        if (index < 0 || index > array->elements.count) {
                             runtimeError("Array index is out of bound: %d.", index);
                         }
                         else {
-                            Value element = array->values[index];
+                            Value element = array->elements.values[index];
                             push(element);
                         }
                     }
@@ -256,7 +259,7 @@ static InterpretResult run() {
                     Value element = pop();
                     int index = AS_NUMBER(pop());
                     ObjArray* array = AS_ARRAY(pop());
-                    if (index < 0 || index > array->count - 1) {
+                    if (index < 0 || index > array->elements.count - 1) {
                         runtimeError("Array index is out of bound: %d.", index);
                     }
                     else {

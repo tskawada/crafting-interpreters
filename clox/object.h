@@ -31,6 +31,7 @@ typedef enum {
 
 struct Obj {
     ObjType type;
+    bool isMarked;
     struct Obj* next;
 };
 
@@ -44,9 +45,7 @@ typedef struct {
 
 typedef struct {
     Obj obj;
-    int count;
-    int capacity;
-    Value* values;
+    ValueArray elements;
 } ObjArray;
 
 typedef Value (*NativeFn)(int argCount, Value* args);

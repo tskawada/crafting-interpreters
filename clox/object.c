@@ -14,8 +14,14 @@
 static Obj* allocateObject(size_t size, ObjType type) {
     Obj* object = (Obj*)reallocate(NULL, 0, size);
     object->type = type;
+    object->isMarked = false;
     object->next = vm.objects;
     vm.objects = object;
+
+#ifdef DEBUG_LOG_GC
+    printf("%p allocate %zu for %d\n", (void*)object, size, type);
+#endif
+
     return object;
 }
 
@@ -43,9 +49,9 @@ ObjFunction* newFunction() {
 
 ObjArray* newArray() {
     ObjArray* array = ALLOCATE_OBJ(ObjArray, OBJ_ARRAY);
-    array->count = 0;
-    array->capacity = 0;
-    array->values = NULL;
+    array->elements.count = 0;
+    array->elements.capacity = 0;
+    array->elements.values = NULL;
     return array;
 }
 
@@ -119,9 +125,19 @@ ObjUpvalue* newUpvalue(Value* slot) {
 void printFunction(ObjFunction* function) {
     if (function->name == NULL) {
         printf("<script>");
-        return;
     }
     printf("<fn %s>", function->name->chars);
+}
+
+void printArray(ObjArray* array) {
+    printf("[");
+    for (int i = 0; i < array->elements.count; i++) {
+        printValue(array->elements.values[i]);
+        if (i != array->elements.count - 1) {
+            printf(", ");
+        }
+    }
+    printf("]");
 }
 
 void printObject(Value value) {
@@ -133,15 +149,7 @@ void printObject(Value value) {
             printFunction(AS_FUNCTION(value));
             break;
         case OBJ_ARRAY:
-            printf("[");
-            for (int i = 0; i < AS_ARRAY(value)->count; i++) {
-                printValue(AS_ARRAY(value)->values[i]);
-                if (i < AS_ARRAY(value)->count - 1) {
-                    printf(", ");
-                }
-            }
-            printf("]");
-            break;
+            printArray(AS_ARRAY(value));
         case OBJ_NATIVE:
             printf("<native fn>");
             break;
