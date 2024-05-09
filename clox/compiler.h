@@ -35,7 +35,6 @@ typedef void (*ParseFn)(bool canAssign);
 typedef struct {
     Token name;
     int depth;
-    bool isCaptured;
 } Local;
 
 typedef enum {
