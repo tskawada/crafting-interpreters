@@ -1,0 +1,14 @@
+var loop_num = 100000;
+var a = 0;
+
+srand(clock() * 1000000);
+
+for (var i = 0; i < loop_num; i = i + 1) {
+    var x = rand();
+    var y = rand();
+
+    if (x * x + y * y < 1) a = a + 1;
+}
+
+var pi = 4 * a / loop_num;
+print pi;
