@@ -200,6 +200,21 @@ static InterpretResult run() {
         double a = AS_NUMBER(pop()); \
         push(valueType(a op b)); \
     } while (false)
+#define INT_BINARY_OP(ValueType, op) \
+    if (!IS_NUMBER(peek(0)) || !IS_NUMBER(peek(1))) { \
+        runtimeError("Operands must be numbers."); \
+        return INTERPRET_RUNTIME_ERROR; \
+    } \
+    do { \
+        double b = AS_NUMBER(pop()); \
+        double a = AS_NUMBER(pop()); \
+        if (b == (int)b && a == (int)a) { \
+            push(ValueType((int)a op (int)b)); \
+        } else { \
+            runtimeError("Operands must be integers."); \
+            return INTERPRET_RUNTIME_ERROR; \
+        } \
+    } while (false)
 
 
     for (;;) {
@@ -342,6 +357,7 @@ static InterpretResult run() {
             case OP_SUBTRACT: BINARY_OP(NUMBER_VAL, -); break;
             case OP_MULTIPLY: BINARY_OP(NUMBER_VAL, *); break;
             case OP_DIVIDE:   BINARY_OP(NUMBER_VAL, /); break;
+            case OP_MODULO:   INT_BINARY_OP(NUMBER_VAL, %); break;
             case OP_NOT:
                 push(BOOL_VAL(isFalsey(pop())));
                 break;
@@ -426,6 +442,7 @@ static InterpretResult run() {
 #undef READ_SHORT
 #undef READ_STRING
 #undef BINARY_OP
+#undef INT_BINARY_OP
 }
 
 InterpretResult interpret(const char* source) {
