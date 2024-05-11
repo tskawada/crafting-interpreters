@@ -57,6 +57,8 @@ void initVM() {
     initTable(&vm.strings);
 
     defineNative("clock", clockNative);
+    defineNative("rand", randNative);
+    defineNative("srand", srandNative);
     defineNative("sleep", sleepMicrosec);
     defineNative("isExists", isExists);
     defineNative("loadFile", loadFile);

@@ -12,6 +12,15 @@ static Value clockNative(int argCount, Value* args) {
     return NUMBER_VAL((double)clock() / CLOCKS_PER_SEC);
 }
 
+static Value randNative(int argCount, Value* args) {
+    return NUMBER_VAL((double)rand() / RAND_MAX);
+}
+
+static Value srandNative(int argCount, Value* args) {
+    srand((unsigned int)AS_NUMBER(args[0]));
+    return NIL_VAL;
+}
+
 static Value sleepMicrosec(int argCount, Value* args) {
     usleep(AS_NUMBER(args[0]));
     return NIL_VAL;
