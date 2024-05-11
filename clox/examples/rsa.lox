@@ -1,0 +1,102 @@
+// calculate greatest common divisor
+fun gcd(a, b) {
+    if (b == 0) return a;
+    return gcd(b, a % b);
+}
+
+// check if a number is prime
+fun check_prime(p) {
+    var i;
+    if (p == 1) return 0;
+    for (i = 1; i < p; i = i + 1) {
+        if (gcd(i, p) != 1) return 0;
+    }
+    return 1;
+}
+
+// calculate quotient
+fun div(a, b) {
+    var q = 0;
+    while (a >= b) {
+        a = a - b; q = q + 1;
+    }
+    return q;
+}
+
+// calculate inverse modulo; 1/a mod m
+fun inv_mod(a, m) {
+    var b;
+    var x;
+    var u;
+    var q;
+    var tmp;
+  
+    b = m; 
+    x = 1; 
+    u = 0;
+    while (b > 0) {
+        q = div(a, b);
+        tmp = u; u = x - q * u; x = tmp;
+        tmp = b; b = a - q * b; a = tmp;
+    }
+    if (x < 0) return x + m;
+    else return x;
+}
+
+// calculate power modulo; a^b mod m
+fun pow_mod(a, b, m) {
+    var r = 1;
+  
+    for (var i = 0; i < b; i = i + 1) {
+        r = (r * a) % m;
+    }
+    return r;
+}
+
+fun calc_e(phi) {
+    var e = 2;
+    while (e < phi) {
+        if (gcd(e, phi) == 1) return e;
+        e = e + 1;
+    }
+    return 0;
+}
+
+// generate two random numbers
+var p = 67;
+var q = 101;
+
+// check if they are prime
+if (check_prime(p) and check_prime(q)) {
+    print "p and q are prime numbers.";
+}
+
+// calculate public key, N and e
+var N = p * q;
+var phi = (p - 1) * (q - 1);
+var e = calc_e(phi);
+
+// message
+var M = 33;
+
+// calculate private key, D
+var D = inv_mod(e, phi);
+
+// encrypt
+var C = pow_mod(M, e, N);
+
+// decrypt
+var P = pow_mod(C, D, N);
+
+print "";
+print "message: ";
+print M;
+print "encrypted message : ";
+print C;
+print "decrypted message : ";
+print P;
+print "";
+
+// check if the message is the sames
+if (M == P) print "message is the same. Success!";
+else print "message is not the same. Failure!";

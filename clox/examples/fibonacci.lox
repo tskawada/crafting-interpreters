@@ -1,0 +1,33 @@
+fun fibonacci(n) { 
+    var a = 0;
+    var b = 1;
+    var c = 0;
+    for (var i = 1; i < n; i = i + 1) {
+       c = a + b;
+       a = b;
+       b = c;
+    }
+    return c;
+}
+
+fun fibonacci_recursive(n) {
+    if (n <= 1) return n;
+    return fibonacci_recursive(n - 1) + fibonacci_recursive(n - 2);
+}
+
+var n = 25;
+
+var start_normal = clock();
+var res_normal = fibonacci(n);
+var end_normal = clock() - start_normal;
+
+var start_recursive = clock();
+var res_recursive = fibonacci_recursive(n);
+var end_recursive = clock() - start_recursive;
+
+print "Calculate fibonacci sequence by normal and recursive methods";
+
+print "Time for normal fibonacci: ";
+print end_normal;
+print "Time for recursive fibonacci: ";
+print end_recursive;
