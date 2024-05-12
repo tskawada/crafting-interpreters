@@ -58,3 +58,8 @@ static Value loadFile(int argCount, Value* args) {
 
     return OBJ_VAL(takeString(buffer, bytesRead));
 }
+
+static Value exitNative(int argCount, Value* args) {
+    exit(AS_NUMBER(args[0]));
+    return NIL_VAL;
+}
