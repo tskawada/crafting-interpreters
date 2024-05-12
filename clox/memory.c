@@ -176,16 +176,12 @@ static void sweep() {
         } else {
             Obj* unreached = object;
             object = object->next;
-            if (previous != NULL) {
-                previous->next = object;
-            } else {
-                vm.objects = object;
-            }
+            if (previous != NULL) previous->next = object;
+            else vm.objects = object;
 
             freeObject(unreached);
         }
     }
-
 }
 
 void collectGarbage() {
