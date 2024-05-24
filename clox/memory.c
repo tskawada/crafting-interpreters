@@ -79,7 +79,7 @@ void freeObject(Obj* object) {
             break;
         }
         case OBJ_NATIVE: {
-            FREE(ObjNative, (ObjNative*)object);
+            FREE(ObjNative, object);
             break;
         }
         case OBJ_STRING: {
